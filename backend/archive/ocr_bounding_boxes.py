@@ -1,3 +1,7 @@
+
+
+# python3 ocr_bounding_boxes.py "cs245_1.png" -o cs245_out.png
+
 import argparse
 from enum import Enum
 import io
