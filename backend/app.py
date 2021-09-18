@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from ocr import gcp_ocr
 from ner import ner_spacy
-from summarization import summarize, summarize_textrank
+from summarization import summarize_t5, summarize_textrank, summarize_bart
 
 app = Flask(__name__)
 
@@ -11,9 +11,12 @@ def root():
     return "Welcome to Hack the North 2021!!!"
 
 
-@ app.route("/process", methods=['POST'])
+@app.route("/process", methods=['POST'])
 def process():
-
+    """
+        Payload:
+            imageData: base64 image string        
+    """
     # imageData base64 image string
     # Fetch image data
     data = request.get_json()
@@ -23,11 +26,12 @@ def process():
 
     # Get OCR text using GCP
     paragraphs, lines = gcp_ocr(imageData)
-    full_text = " ".join(paragraphs)
+    full_text = " . ".join(paragraphs)
     # Run Named Entity Recognition
     entities = ner_spacy(full_text)
 
-    summary = summarize_textrank(full_text)
+    # Summarize the text
+    summary = summarize_bart(full_text)
 
     return jsonify({"paragraphs": paragraphs, "lines": lines, "entities": entities, "summary": summary})
 
