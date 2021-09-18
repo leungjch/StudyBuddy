@@ -58,7 +58,7 @@ def gcp_ocr(image_content):
 
 
 def east_ocr(image):
-    # Given the data for an image, returns the same image with bounding boxes highlighting text
+    # Given the data for an image, returns the list of boxes surrounding text
     layerNames = [
         "feature_fusion/Conv_7/Sigmoid",
         "feature_fusion/concat_3"]
@@ -137,19 +137,21 @@ def east_ocr(image):
             confidences.append(scoresData[x])
 
     boxes = non_max_suppression(np.array(rects), probs=confidences)
-    # loop over the bounding boxes
-    for (startX, startY, endX, endY) in boxes:
-        # scale the bounding box coordinates based on the respective
-        # ratios
-        startX = int(startX * rW)
-        startY = int(startY * rH)
-        endX = int(endX * rW)
-        endY = int(endY * rH)
-        # draw the bounding box on the image
-        cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
     print(time.time() - start)
-    return orig
+    return boxes
+
+# def draw_on_image(boxes):
+#     # loop over the bounding boxes
+#     for (startX, startY, endX, endY) in boxes:
+#         # scale the bounding box coordinates based on the respective
+#         # ratios
+#         startX = int(startX * rW)
+#         startY = int(startY * rH)
+#         endX = int(endX * rW)
+#         endY = int(endY * rH)
+#         # draw the bounding box on the image
+#         cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
 # image = cv2.imread("images/LeBron_James_crop.jpg")
 
