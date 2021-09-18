@@ -59,32 +59,28 @@ def gcp_ocr(image_content):
 
 def east_ocr(image):
     # Given the data for an image, returns the list of boxes surrounding text
-    layerNames = [
-        "feature_fusion/Conv_7/Sigmoid",
-        "feature_fusion/concat_3"]
-
-    orig = image.copy()
+    layerNames = ["feature_fusion/Conv_7/Sigmoid", "feature_fusion/concat_3"]
 
     if len(image.shape) == 2:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
-    (H, W) = image.shape[:2]
+    (height, width) = image.shape[:2]
 
-    # set the new width and height and then determine the ratio in change
-    # for both the width and height: Should be multiple of 32
+    # Set the new width and height and then determine the ratio in change
+    # For both the width and height: Should be multiple of 32
     (newW, newH) = (320, 320)
 
-    rW = W / float(newW)
-    rH = H / float(newH)
+    rW = width / float(newW)
+    rH = height / float(newH)
 
     # resize the image and grab the new image dimensions
     image = cv2.resize(image, (newW, newH))
 
-    (H, W) = image.shape[:2]
+    (height, width) = image.shape[:2]
 
     net = cv2.dnn.readNet("model/frozen_east_text_detection.pb")
 
-    blob = cv2.dnn.blobFromImage(image, 1.0, (W, H),
+    blob = cv2.dnn.blobFromImage(image, 1.0, (width, height),
                                  (123.68, 116.78, 103.94), swapRB=True, crop=False)
 
     start = time.time()
@@ -111,6 +107,8 @@ def east_ocr(image):
         for x in range(0, numCols):
             # if our score does not have sufficient probability, ignore it
             # Set minimum confidence as required
+
+            # Need score of at least 0.5
             if scoresData[x] < 0.5:
                 continue
             # compute the offset factor as our resulting feature maps will
