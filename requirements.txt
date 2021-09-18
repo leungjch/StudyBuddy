@@ -2,3 +2,4 @@ google-cloud-vision
 spacy
 gensim
 transformers
+shortuuid

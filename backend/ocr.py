@@ -36,24 +36,44 @@ def gcp_ocr(image_content):
             for paragraph in block.paragraphs:
                 para = ""
                 line = ""
-                for word in paragraph.words:
+                line_bounding_box = {"x": 0, "y": 0, "width": 0, "height": 0}
+
+                for i in range(len(paragraph.words)):
+                    word = paragraph.words[i]
+                    word_box = word.bounding_box
+                    if len(word_box.vertices) != 4:
+                        continue
+                    # set top left corner if it's the first word of the line
+                    # also set height for the line
+                    if line == "":
+                        line_bounding_box["x"] = word_box.vertices[0].x
+                        line_bounding_box["y"] = word_box.vertices[0].y
+
+                    line_bounding_box["height"] = max(line_bounding_box["height"], word_box.vertices[3].y -
+                                                      word_box.vertices[0].y)
+                    line_bounding_box["width"] += word_box.vertices[1].x - \
+                        word_box.vertices[0].x
+
                     for symbol in word.symbols:
                         line += symbol.text
                         if symbol.property.detected_break.type_ == breaks.SPACE:
                             line += ' '
                         if symbol.property.detected_break.type_ == breaks.EOL_SURE_SPACE:
                             line += ' '
-                            lines.append(line)
+                            print("line", line)
+                            lines.append(
+                                {"text": line, "bounding_box": line_bounding_box})
                             para += line
                             line = ''
                         if symbol.property.detected_break.type_ == breaks.LINE_BREAK:
-                            lines.append(line)
+                            print("line", line)
+                            lines.append(
+                                {"text": line, "bounding_box": line_bounding_box})
                             para += line
                             line = ''
                 paragraphs.append(para)
 
-    print(paragraphs)
-    print(lines)
+    # print(lines)
     return paragraphs, lines
 
 
@@ -68,13 +88,13 @@ def east_ocr(image):
 
     # Set the new width and height and then determine the ratio in change
     # For both the width and height: Should be multiple of 32
-    (newW, newH) = (320, 320)
+    (newWidth, newHeight) = (320, 320)
 
-    rW = width / float(newW)
-    rH = height / float(newH)
+    rW = width / float(newWidth)
+    rH = height / float(newHeight)
 
     # resize the image and grab the new image dimensions
-    image = cv2.resize(image, (newW, newH))
+    image = cv2.resize(image, (newWidth, newHeight))
 
     (height, width) = image.shape[:2]
 
@@ -106,16 +126,15 @@ def east_ocr(image):
 
         for x in range(0, numCols):
             # if our score does not have sufficient probability, ignore it
-            # Set minimum confidence as required
-
             # Need score of at least 0.5
             if scoresData[x] < 0.5:
                 continue
+
             # compute the offset factor as our resulting feature maps will
             #  x smaller than the input image
             (offsetX, offsetY) = (x * 4.0, y * 4.0)
-            # extract the rotation angle for the prediction and then
-            # compute the sin and cosine
+
+            # extract the rotation angle for the prediction
             angle = anglesData[x]
             cos = np.cos(angle)
             sin = np.sin(angle)
@@ -136,23 +155,30 @@ def east_ocr(image):
 
     boxes = non_max_suppression(np.array(rects), probs=confidences)
 
+    scaled_boxes = np.zeros((len(boxes), 4))
+
+    for i in range(len(boxes)):
+        # scale the bounding box coordinates based on the respective ratios
+        # Add scaled bounding box to final array
+
+        scaled_boxes[i][0] = int(boxes[i][0] * rW)
+        scaled_boxes[i][1] = int(boxes[i][1] * rH)
+        scaled_boxes[i][2] = int(boxes[i][2] * rW)
+        scaled_boxes[i][3] = int(boxes[i][3] * rH)
+
     print(time.time() - start)
-    return boxes
 
-# def draw_on_image(boxes):
-#     # loop over the bounding boxes
-#     for (startX, startY, endX, endY) in boxes:
-#         # scale the bounding box coordinates based on the respective
-#         # ratios
-#         startX = int(startX * rW)
-#         startY = int(startY * rH)
-#         endX = int(endX * rW)
-#         endY = int(endY * rH)
-#         # draw the bounding box on the image
-#         cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+    return scaled_boxes.astype(np.uintc)
 
-# image = cv2.imread("images/LeBron_James_crop.jpg")
 
-# out_image = east_ocr(image)
+def draw_text_bounding_boxes(image_path, output_path):
+    # Get image data
+    image = cv2.imread(image_path)
 
-# cv2.imwrite("images/LeBron_James_crop.jpg", out_image)
+    boxes = east_ocr(image)
+
+    for i in range(len(boxes)):
+        cv2.rectangle(image, (boxes[i][0], boxes[i][1]),
+                      (boxes[i][2], boxes[i][3]), (0, 255, 0), 2)
+
+    cv2.imwrite(output_pat, image)
