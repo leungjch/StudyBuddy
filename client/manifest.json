@@ -2,7 +2,6 @@
   "name": "studybuddy",
   "version": "0.0.1",
   "manifest_version": 2,
-  "default_locale": "en",
   "description": "study buddy ...",
   "icons": {
     "16": "icons/icon16.png",
@@ -21,7 +20,18 @@
       ],
       "js": [
         "src/content/content.js"
-      ]
+      ],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/browser_action/browser_action.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
     }
   ],
   "browser_action": {

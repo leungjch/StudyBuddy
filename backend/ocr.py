@@ -14,6 +14,9 @@ import cv2
 import time
 from imutils.object_detection import non_max_suppression
 
+import torch
+# from torch.utils.serialization import load_lua
+
 
 def gcp_ocr(image_content):
     client = vision.ImageAnnotatorClient()
@@ -59,22 +62,34 @@ def gcp_ocr(image_content):
                         if symbol.property.detected_break.type_ == breaks.SPACE:
                             line += ' '
                         if symbol.property.detected_break.type_ == breaks.EOL_SURE_SPACE:
+                            print("EOL_SURE_SPACE")
+
                             line += ' '
-                            print("line", line)
                             lines.append(
                                 {"text": line, "bounding_box": line_bounding_box})
                             para += line
                             line = ''
+                            line_bounding_box = {
+                                "x": 0, "y": 0, "width": 0, "height": 0}
+
                         if symbol.property.detected_break.type_ == breaks.LINE_BREAK:
-                            print("line", line)
+                            print("LINE_BREAK")
                             lines.append(
                                 {"text": line, "bounding_box": line_bounding_box})
                             para += line
                             line = ''
+                            line_bounding_box = {
+                                "x": 0, "y": 0, "width": 0, "height": 0}
+
                 paragraphs.append(para)
 
     # print(lines)
     return paragraphs, lines
+
+
+def math_to_markdown(image):
+    model = load_lua('models/final-model')
+    return model(image)
 
 
 def east_ocr(image):
@@ -182,3 +197,67 @@ def draw_text_bounding_boxes(image_path, output_path):
                       (boxes[i][2], boxes[i][3]), (0, 255, 0), 2)
 
     cv2.imwrite(output_pat, image)
+
+
+# [START vision_web_detection]
+def detect_web(path):
+    """Detects web annotations given an image."""
+
+    client = vision.ImageAnnotatorClient()
+
+    # [START vision_python_migration_web_detection]
+    with io.open(path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.Image(content=content)
+
+    response = client.web_detection(image=image)
+    annotations = response.web_detection
+
+    if annotations.best_guess_labels:
+        for label in annotations.best_guess_labels:
+            print('\nBest guess label: {}'.format(label.label))
+
+    if annotations.pages_with_matching_images:
+        print('\n{} Pages with matching images found:'.format(
+            len(annotations.pages_with_matching_images)))
+
+        for page in annotations.pages_with_matching_images:
+            print('\n\tPage url   : {}'.format(page.url))
+
+            if page.full_matching_images:
+                print('\t{} Full Matches found: '.format(
+                    len(page.full_matching_images)))
+
+                for image in page.full_matching_images:
+                    print('\t\tImage url  : {}'.format(image.url))
+
+            if page.partial_matching_images:
+                print('\t{} Partial Matches found: '.format(
+                    len(page.partial_matching_images)))
+
+                for image in page.partial_matching_images:
+                    print('\t\tImage url  : {}'.format(image.url))
+
+    if annotations.web_entities:
+        print('\n{} Web entities found: '.format(
+            len(annotations.web_entities)))
+
+        for entity in annotations.web_entities:
+            print('\n\tScore      : {}'.format(entity.score))
+            print(u'\tDescription: {}'.format(entity.description))
+
+    if annotations.visually_similar_images:
+        print('\n{} visually similar images found:\n'.format(
+            len(annotations.visually_similar_images)))
+
+        for image in annotations.visually_similar_images:
+            print('\tImage url    : {}'.format(image.url))
+
+    if response.error.message:
+        raise Exception(
+            '{}\nFor more info on error messages, check: '
+            'https://cloud.google.com/apis/design/errors'.format(
+                response.error.message))
+    # [END vision_python_migration_web_detection]
+# [END vision_web_detection]

@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 import psycopg2
 import time
@@ -9,7 +10,10 @@ from ocr import gcp_ocr
 from ner import ner_spacy
 from summarization import summarize_t5, summarize_textrank, summarize_bart
 
-from dotenv import load_dotenv
+import cv2
+
+sample = json.load(open("images/processpayload2.json"))
+
 load_dotenv()
 
 COCKROACH_DB_PASS = os.environ['COCKROACH_DB_PASS']
@@ -34,7 +38,7 @@ def root():
     records = cur.fetchall()
     print(records)
 
-    return "Welcome to Hack the North 2021!!!"
+    return {"message": "Welcome to Hack the North 2021!!!"}
 
 
 @app.route("/test", methods=["get"])
@@ -59,7 +63,11 @@ def process():
     # imageData base64 image string
     # Fetch image data
     data = request.get_json()
-    imageData = data['imageData']
+
+    if data is None:
+        imageData = sample['imageData']
+    else:
+        imageData = data.get('imageData')
 
     # Get OCR text using GCP
     paragraphs, lines = gcp_ocr(imageData)
@@ -69,9 +77,9 @@ def process():
 
     # Summarize the text
     summary = summarize_bart(full_text)
-
+    print(lines)
     response = make_response(jsonify(
-        {"lines": lines, "entities": entities, "summary": summary}))
+        {"full_text": full_text, "lines": lines, "entities": entities, "summary": summary}))
     # Write to CockroachDB and write the image to Google blob storage
 
     @response.call_on_close
@@ -88,7 +96,6 @@ def process():
         cur.execute("SELECT * from analytics;")
         records = cur.fetchall()
         conn.commit()
-        print(records)
 
     return response
 

@@ -33,5 +33,33 @@ img {
 .popup-content {
   margin: 10px;
   text-align: center;
+  align-content: center;
   font-size: 14px;
+}
+
+button {
+  align-content: center;
+  min-width: 150px;
+  min-height: 35px;
+  border-radius: 25px;
+  background-color: #5580e9;
+  font-family: 'Dosis', sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 2px;
+  color: #fff;
+  border: none;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.box{
+  display: flex;
+  width: 100%;
+}
+
+a:hover + .box,.box:hover{
+  display: block;
+  position: relative;
+  z-index: 100;
 }

@@ -2,3 +2,4 @@ env/
 htn21-gcp-creds.json
 backend/models/*
 *.mp4
+.env

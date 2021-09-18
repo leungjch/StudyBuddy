@@ -9,25 +9,31 @@
 </head>
 
 <body>
-	<div id="mainPopup">
+	<div class="container">
 		<div class="popup-header">
 			<h1 class="logo">
 				studybuddy
-				<img src="../../icons/icon96.png" alt="studybuddy logo">
+				<img src="../../icons/icon96.png" alt="logo">
 			</h1>
 		</div>
 		<div class="popup-content">
-			<p class="description">using your cursor, select the text within video you want extracted</p>
+			<button id='capture-btn'>capture image</button>
+			<p class="description">Using your cursor, select the text within video you want extracted!</p>
 		</div>
-		<div class="popup-container">
+		<div id='results' class="popup-extra">
+
+			<p><strong>Parsed notes<br></strong></p>
+			<p id="notes"></p>
+			<p><strong>Detected entities<br> </strong></p>
+			<p id='entities'></p>
+			<p><strong>Summary<br> </strong></p>
+			<p id='summary'></p>
 		</div>
-
-
-		<p>To shut this popup down, edit the manifest file and remove the "default popup" key. To edit it, just edit
-			ext/browser_action/browser_action.html. The CSS is there, too.
-		</p>
-
 	</div>
+
+	<!-- chrome.tabs.script -->
+
+	<script src="popup.js"></script>
 </body>
 
 </html>
