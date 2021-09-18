@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from ocr import gcp_ocr
 from ner import ner_spacy
-from summarization import summarize
+from summarization import summarize, summarize_textrank
 
 app = Flask(__name__)
 
@@ -23,13 +23,13 @@ def process():
 
     # Get OCR text using GCP
     paragraphs, lines = gcp_ocr(imageData)
-    full_text = "".join(paragraphs)
+    full_text = " ".join(paragraphs)
     # Run Named Entity Recognition
     entities = ner_spacy(full_text)
 
-    summarize(full_text)
+    summary = summarize_textrank(full_text)
 
-    return jsonify({"paragraphs": paragraphs, "lines": lines, "entities": entities})
+    return jsonify({"paragraphs": paragraphs, "lines": lines, "entities": entities, "summary": summary})
 
 
 if __name__ == "__main__":
