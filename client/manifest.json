@@ -12,13 +12,24 @@
   "background": {
     "scripts": [
       "src/bg/background.js"
-    ],
-    "persistent": true
+    ]
   },
-  "options_page": "src/options/index.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "src/content/content.js"
+      ]
+    }
+  ],
   "browser_action": {
-    "default_icon": "icons/icon19.png",
-    "default_title": "browser action demo",
+    "default_icon": "icons/icondefault.png",
     "default_popup": "src/browser_action/browser_action.html"
-  }
+  },
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ]
 }

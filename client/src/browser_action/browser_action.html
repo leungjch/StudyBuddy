@@ -1,5 +1,16 @@
 <!doctype html>
 <style type="text/css">
+	html,
+	body {
+		font-family: 'Dosis', sans-serif;
+		font-size: 14px;
+		margin: 0px;
+		padding: 0px;
+		width: 300px;
+		border: 0.5px solid #fff;
+		box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+	}
+
 	#mainPopup {
 		padding: 10px;
 		height: 200px;
@@ -8,13 +19,30 @@
 	}
 
 	h1 {
-		font-size: 2em;
+		font-size: 22px;
+		font-weight: 700;
+		color: #5580E9;
+		margin-top: 20px;
+	}
+
+	img {
+		margin-top: -10px;
+		width: 40px;
+		float: right;
 	}
 </style>
 
+
 <div id="mainPopup">
-	<h1>StudyBuddy</h1>
+	<div class="popup-header">
+		<h1 class="logo">
+			studybuddy
+			<img src="icons/icon96.png" alt="studybuddy logo">
+		</h1>
+	</div>
+
 	<p>To shut this popup down, edit the manifest file and remove the "default popup" key. To edit it, just edit
 		ext/browser_action/browser_action.html. The CSS is there, too.
 	</p>
+
 </div>
