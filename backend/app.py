@@ -22,8 +22,6 @@ def process():
     data = request.get_json()
     imageData = data['imageData']
 
-    print("hello")
-
     # Get OCR text using GCP
     paragraphs, lines = gcp_ocr(imageData)
     full_text = " . ".join(paragraphs)
