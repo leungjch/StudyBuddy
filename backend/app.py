@@ -3,6 +3,8 @@ import psycopg2
 import time
 import json
 from flask import Flask, request, jsonify, Response, make_response
+from flask_cors import CORS, cross_origin
+
 from ocr import gcp_ocr
 from ner import ner_spacy
 from summarization import summarize_t5, summarize_textrank, summarize_bart
@@ -14,6 +16,8 @@ COCKROACH_DB_PASS = os.environ['COCKROACH_DB_PASS']
 
 
 app = Flask(__name__)
+cors = CORS(app)
+
 
 conn = psycopg2.connect(user="htn21",
                         password=COCKROACH_DB_PASS,
@@ -46,6 +50,7 @@ def test():
 
 
 @app.route("/process", methods=['POST'])
+@cross_origin()
 def process():
     """
         Payload:
