@@ -1,6 +1,6 @@
 # StudyBuddy | Intelligent video notetaking Chrome extension
 
-##💡 Inspiration 💡
+## 💡 Inspiration 💡
 Due to the COVID-19 pandemic, many post secondary institutions have shifted online, meaning more online lectures and watching videos to learn. However, as university students ourselves, we often found that balancing watching lectures and taking neat, high quality notes is really, really hard. 
 
 Writing or typing for extended periods of time is tiring, and in the process of scribbling down everything to make sure we didn't miss anything important, we end up with notes we can barely read, or are badly organized, and we don't end up focusing on watching the lecture, either.
