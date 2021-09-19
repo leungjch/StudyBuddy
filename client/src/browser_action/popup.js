@@ -42,10 +42,6 @@ document.addEventListener(
       chrome.runtime.onMessage.addListener((msg, sender) => {
         
         var datestring = new Date().toLocaleString().replace(",","").replace(/:.. /," ");
-        var unix_timestamp = new Date().getTime()
-        if (unix_timestamp % 10 != 0) {
-          return 
-        }
 
         chrome.extension.getBackgroundPage().console.log("Getting message");
         chrome.extension.getBackgroundPage().console.log(msg);
