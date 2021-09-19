@@ -11,6 +11,7 @@ from ner import ner_spacy
 from summarization import summarize_t5, summarize_textrank, summarize_bart
 
 import cv2
+import shortuuid
 
 sample = json.load(open("images/processpayload2.json"))
 
@@ -51,6 +52,13 @@ def test():
             time.sleep(1)
             print(i)
     return response
+
+
+@app.route("/new_session", methods=['GET'])
+@cross_origin()
+def new_session():
+
+    return {"uuid": shortuuid.uuid()}
 
 
 @app.route("/process", methods=['POST'])
