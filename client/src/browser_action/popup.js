@@ -3,10 +3,74 @@
 // var b = document.getElementById("demo");
 // b.addEventListener("click", function(){console.log("Hello");})
 
+
+
+
 // Add a button listener 
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
+
+      chrome.runtime.onMessage.addListener((msg, sender) => {
+        chrome.extension.getBackgroundPage().console.log("Getting message");
+        chrome.extension.getBackgroundPage().console.log(msg);
+
+        var result = msg;
+        // Update the extension UI
+        var notes = document.getElementById('notes-list')
+        for (let line of result['lines']) {
+            notes.innerHTML += `<li>${line['text']}</li>`
+        }
+        notes.innerHTML += "<br>"
+        
+        // List out detected entities and fetch corresponding wiki page
+        var entities = document.getElementById('entities-list')
+        for (let line of result['entities']) {
+
+            var wiki_link = `https://en.wikipedia.org/wiki/${line['entity']}`
+
+            // var iframe = document.createElement('iframe'); 
+            // iframe.style.background = "white";
+            // iframe.style.height = "100%";
+            // iframe.style.width = "500px";
+            // iframe.style.position = "relative";
+            // iframe.style.top = "0px";
+            // iframe.style.right = "0px";
+            // iframe.frameBorder = "none"; 
+            // iframe.src = wiki_link
+            // iframe.className=""
+
+
+            // entities.innerHTML += `<a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})`
+            entities.innerHTML += `
+            <li>
+            <a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})
+            </li>
+            <br>
+            `
+            // entities.innerHTML += '<br>'
+            // entities.innerHTML += `
+            //     <div class="link" id="${'box_'+wiki_link}">
+            //     </div> 
+            // `
+            // entities.innerHTML += `<br>`
+
+            // var boxDiv = document.getElementById('box_'+wiki_link)
+            
+            // boxDiv.appendChild(iframe);
+        }
+        entities.innerHTML += "<br><br>"
+
+
+        var summary = document.getElementById('summary')
+        summary.innerHTML += result['summary']
+        summary.innerHTML += `<br>`
+
+
+        // Reset button text back to normal
+        button.innerHTML = "wake up studybuddy"
+
+      });
 
 
       function hello() {
@@ -14,7 +78,6 @@ document.addEventListener(
         //   file: '../inject.js'
         // }); 
         chrome.runtime.sendMessage({'myPopupIsOpen': true});
-
       }
 
 

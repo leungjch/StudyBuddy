@@ -181,6 +181,9 @@ function main() {
     console.log(dataURL);
     var selectedRects = [];
     let response = await getAPI(dataURL);
+    chrome.runtime.sendMessage(response, function(response) {
+      console.log("sending message");
+      });
     response.lines.forEach((line) => {
       const boundaryBox = line.bounding_box;
       const [width, height] = [video.offsetWidth, video.offsetHeight];
