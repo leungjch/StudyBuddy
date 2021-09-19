@@ -7,6 +7,65 @@
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
+
+
+      function hello() {
+        // chrome.tabs.executeScript({
+        //   file: '../inject.js'
+        // }); 
+        chrome.runtime.sendMessage({'myPopupIsOpen': true});
+
+      }
+
+
+      
+      document.getElementById('capture-btn').addEventListener('click', hello);
+
+        // Get session id
+     
+
+
+      const notesButton = document.getElementById("notesbtn");
+      notesButton.addEventListener(
+          "click",
+          () => {
+            var x = document.getElementById("notes-div");
+            if (x.style.display === "none") {
+              x.style.display = "block";
+            } else {
+              x.style.display = "none";
+            }
+        }
+      );
+
+      const entitiesButton = document.getElementById("topicsbtn");
+      entitiesButton.addEventListener(
+          "click",
+          () => {
+            var x = document.getElementById("entities-div");
+            if (x.style.display === "none") {
+              x.style.display = "block";
+            } else {
+              x.style.display = "none";
+            }
+        }
+      );
+
+      const summaryButton = document.getElementById("summarybtn");
+      summaryButton.addEventListener(
+          "click",
+          () => {
+            var x = document.getElementById("summary-div");
+            
+            if (x.style.display === "none") {
+              x.style.display = "block";
+            } else {
+              x.style.display = "none";
+            }
+        }
+      );
+
+
       const button = document.getElementById("capture-btn");
       button.addEventListener(
         "click",
@@ -43,50 +102,59 @@ document.addEventListener(
                 chrome.extension.getBackgroundPage().console.log('Success:', result);
 
                 // Update the extension UI
-                var notes = document.getElementById('notes')
+                var notes = document.getElementById('notes-list')
                 for (let line of result['lines']) {
-                    notes.innerHTML += line['text']
-                    notes.innerHTML += '<br>'
+                    notes.innerHTML += `<li>${line['text']}</li>`
                 }
+                notes.innerHTML += "<br>"
                 
                 // List out detected entities and fetch corresponding wiki page
-                var entities = document.getElementById('entities')
+                var entities = document.getElementById('entities-list')
                 for (let line of result['entities']) {
 
                     var wiki_link = `https://en.wikipedia.org/wiki/${line['entity']}`
 
-                    var iframe = document.createElement('iframe'); 
-                    iframe.style.background = "white";
-                    iframe.style.height = "100%";
-                    iframe.style.width = "50px";
-                    iframe.style.position = "fixed";
-                    iframe.style.top = "0px";
-                    iframe.style.right = "0px";
-                    iframe.frameBorder = "none"; 
-                    iframe.src = wiki_link
-                    
-                    
+                    // var iframe = document.createElement('iframe'); 
+                    // iframe.style.background = "white";
+                    // iframe.style.height = "100%";
+                    // iframe.style.width = "500px";
+                    // iframe.style.position = "relative";
+                    // iframe.style.top = "0px";
+                    // iframe.style.right = "0px";
+                    // iframe.frameBorder = "none"; 
+                    // iframe.src = wiki_link
+                    // iframe.className=""
 
 
-
-
-
-
-                    entities.innerHTML += `<a href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})`
-                    entities.innerHTML += '<br>'
+                    // entities.innerHTML += `<a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})`
                     entities.innerHTML += `
-                        <div class="box" id="${'box_'+wiki_link}">
-                        </div> 
+                    <li>
+                    <a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})
+                    </li>
+                    <br>
                     `
+                    // entities.innerHTML += '<br>'
+                    // entities.innerHTML += `
+                    //     <div class="link" id="${'box_'+wiki_link}">
+                    //     </div> 
+                    // `
+                    // entities.innerHTML += `<br>`
 
-                    var boxDiv = document.getElementById('box_'+wiki_link)
+                    // var boxDiv = document.getElementById('box_'+wiki_link)
                     
-                    boxDiv.appendChild(iframe);
-
+                    // boxDiv.appendChild(iframe);
                 }
+                entities.innerHTML += "<br><br>"
+
 
                 var summary = document.getElementById('summary')
                 summary.innerHTML += result['summary']
+                summary.innerHTML += `<br>`
+
+
+                // Reset button text back to normal
+                button.innerHTML = "wake up studybuddy"
+
 
             })
             .catch(error => {

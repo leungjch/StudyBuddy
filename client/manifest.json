@@ -10,35 +10,18 @@
   },
   "background": {
     "scripts": [
-      "src/bg/background.js"
-    ]
+      "background.js"
+    ],
+    "persistent": true
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*.youtube.com/*"
-      ],
-      "js": [
-        "src/content/content.js"
-      ],
-      "all_frames": true
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "src/browser_action/browser_action.html"
-      ],
-      "matches": [
-        "<all_urls>"
-      ],
-    }
-  ],
   "browser_action": {
+    "default_title": "StudyBuddy",
     "default_icon": "icons/icondefault.png",
     "default_popup": "src/browser_action/browser_action.html"
   },
   "permissions": [
+    "https://*/*",
+    "http://*/*",
     "activeTab",
     "tabs"
   ]

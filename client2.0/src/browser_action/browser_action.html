@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="../../css/main.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="popup-header">
+			<h1 class="logo">
+				studybuddy
+				<img src="../../icons/icon96.png" alt="logo">
+			</h1>
+		</div>
+		<div class="popup-content">
+			<button id='capture-btn'>capture image</button>
+			<p class="description">Using your cursor, select the text within video you want extracted!</p>
+		</div>
+		<div id='results' class="popup-extra">
+
+			<p><strong>Parsed notes<br></strong></p>
+			<p id="notes"></p>
+			<p><strong>Detected entities<br> </strong></p>
+			<p id='entities'></p>
+			<p><strong>Summary<br> </strong></p>
+			<p id='summary'></p>
+		</div>
+	</div>
+
+	<!-- chrome.tabs.script -->
+
+	<script src="popup.js"></script>
+</body>
+
+</html>
