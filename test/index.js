@@ -203,9 +203,9 @@ function main() {
   }, 5000);
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  main();
-});
+// window.addEventListener("DOMContentLoaded", () => {
+//   main();
+// });
 
 window.onresize = () => {
   let video = document.querySelector("video");
