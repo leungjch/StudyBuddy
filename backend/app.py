@@ -34,10 +34,10 @@ conn = psycopg2.connect(user="htn21",
 @app.route("/", methods=['GET'])
 def root():
 
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM analytics;")
-    records = cur.fetchall()
-    print(records)
+    # cur = conn.cursor()
+    # cur.execute("SELECT * FROM analytics;")
+    # records = cur.fetchall()
+    # print(records)
 
     return {"message": "Welcome to Hack the North 2021!!!"}
 
@@ -101,8 +101,8 @@ def process():
             summary), json.dumps(entities))
 
         cur.execute(sql, data)
-        cur.execute("SELECT * from analytics;")
-        records = cur.fetchall()
+        # cur.execute("SELECT * from analytics;")
+        # records = cur.fetchall()
         conn.commit()
 
     return response

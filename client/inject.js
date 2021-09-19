@@ -1,4 +1,4 @@
-alert("injected");
+alert("Studybudy is taking notes now!");
 class Rect {
   constructor(x, y, width, height, value = null) {
     this.x = x;
@@ -43,6 +43,9 @@ class Canvas {
         text.style.top = rect.y + video.getBoundingClientRect().top + "px";
         text.style.textAlign = "center";
         text.style.color = "transparent";
+
+        text.style.backgroundColor = "rgba(0, 0, 255, 0.2)";
+
         text.style.setProperty("z-index", "2147483638", "important");
         text.style.userSelect = "text";
         text.style.fontSize = `${rect.height}px`;

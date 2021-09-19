@@ -23,6 +23,7 @@
     "https://*/*",
     "http://*/*",
     "activeTab",
-    "tabs"
+    "tabs",
+    "storage"
   ]
 }

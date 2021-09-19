@@ -11,20 +11,62 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
+      // Load data once
+      chrome.storage.local.get(["notes_html"], function(result) {
+        var notes = document.getElementById('notes-list')
+        chrome.extension.getBackgroundPage().console.log("restoring");
+
+        chrome.extension.getBackgroundPage().console.log(result);
+
+        if (result['notes_html'] != null) {
+
+          notes.innerHTML = result['notes_html'];
+
+        }
+      });
+      chrome.storage.local.get(["entities_html"], function(result) {
+        var entities = document.getElementById('entities-list')
+        if (result['entities_html'] != null){
+          entities.innerHTML = result['entities_html'];
+
+        }
+      });
+      chrome.storage.local.get(["summary_html"], function(result) {
+        var summary = document.getElementById('summary')
+        if (result['summary_html'] != null) {
+          summary.innerHTML = result["summary_html"];      
+
+        }
+      });
+
       chrome.runtime.onMessage.addListener((msg, sender) => {
+        
+        var datestring = new Date().toLocaleString().replace(",","").replace(/:.. /," ");
+        var unix_timestamp = new Date().getTime()
+        if (unix_timestamp % 10 != 0) {
+          return 
+        }
+
         chrome.extension.getBackgroundPage().console.log("Getting message");
         chrome.extension.getBackgroundPage().console.log(msg);
 
         var result = msg;
         // Update the extension UI
         var notes = document.getElementById('notes-list')
+        var newNote = ""
+        newNote += `<p><strong>${datestring}</strong></p>`
         for (let line of result['lines']) {
-            notes.innerHTML += `<li>${line['text']}</li>`
+            newNote += `<li>${line['text']}</li>`
         }
-        notes.innerHTML += "<br>"
+        newNote += "<br>"
+
+        notes.innerHTML = newNote +  notes.innerHTML
         
         // List out detected entities and fetch corresponding wiki page
         var entities = document.getElementById('entities-list')
+        var newEntities = ""
+        newEntities += `<p><strong>${datestring}</strong></p>`
+
         for (let line of result['entities']) {
 
             var wiki_link = `https://en.wikipedia.org/wiki/${line['entity']}`
@@ -42,7 +84,7 @@ document.addEventListener(
 
 
             // entities.innerHTML += `<a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})`
-            entities.innerHTML += `
+            newEntities += `
             <li>
             <a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})
             </li>
@@ -59,16 +101,34 @@ document.addEventListener(
             
             // boxDiv.appendChild(iframe);
         }
-        entities.innerHTML += "<br><br>"
+        newEntities += "<br><br>"
+
+        entities.innerHTML = newEntities + entities.innerHTML 
 
 
         var summary = document.getElementById('summary')
-        summary.innerHTML += result['summary']
-        summary.innerHTML += `<br>`
+        var newSummary = ""
+        newSummary += `<p><strong>${datestring}</strong></p>`
+
+        newSummary += result['summary']
+        newSummary += `<br>`
+        summary.innerHTML = newSummary + summary.innerHTML;
 
 
         // Reset button text back to normal
         button.innerHTML = "wake up studybuddy"
+
+
+        // // Store the new data
+        chrome.storage.local.set({"notes_html": notes.innerHTML}, function() {
+          console.log('update notes');
+        });
+        chrome.storage.local.set({"entities_html": entities.innerHTML}, function() {
+          console.log('update entities');
+        });
+        chrome.storage.local.set({"summary_html": summary.innerHTML}, function() {
+          console.log('update summary');
+        });
 
       });
 
@@ -86,6 +146,9 @@ document.addEventListener(
 
         // Get session id
      
+        var a = document.getElementById("notes-div");
+        var b = document.getElementById("entities-div");
+        var c = document.getElementById("summary-div");
 
 
       const notesButton = document.getElementById("notesbtn");
@@ -94,9 +157,11 @@ document.addEventListener(
           () => {
             var x = document.getElementById("notes-div");
             if (x.style.display === "none") {
-              x.style.display = "block";
+              a.style.display = "block";
+              b.style.display = c.style.display = "none";
             } else {
-              x.style.display = "none";
+              a.style.display = "block";
+              b.style.display = c.style.display = "none";
             }
         }
       );
@@ -107,9 +172,11 @@ document.addEventListener(
           () => {
             var x = document.getElementById("entities-div");
             if (x.style.display === "none") {
-              x.style.display = "block";
+              b.style.display = "block";
+              a.style.display = c.style.display = "none";
             } else {
-              x.style.display = "none";
+              b.style.display = "block";
+              c.style.display = a.style.display = "none";
             }
         }
       );
@@ -121,9 +188,11 @@ document.addEventListener(
             var x = document.getElementById("summary-div");
             
             if (x.style.display === "none") {
-              x.style.display = "block";
+              c.style.display = "block";
+              a.style.display = b.style.display = "none";
             } else {
-              x.style.display = "none";
+              c.style.display = "block";
+              a.style.display = b.style.display = "none";
             }
         }
       );
@@ -156,73 +225,73 @@ document.addEventListener(
     
 
             // Test communicating with backend
-            fetch('http://localhost:8000/process', {
-                method: 'POST',
-                body: ""
-            })
-            .then(response => response.json())
-            .then(result => {
-                chrome.extension.getBackgroundPage().console.log('Success:', result);
+            // fetch('http://localhost:8000/process', {
+            //     method: 'POST',
+            //     body: ""
+            // })
+            // .then(response => response.json())
+            // .then(result => {
+            //     chrome.extension.getBackgroundPage().console.log('Success:', result);
 
-                // Update the extension UI
-                var notes = document.getElementById('notes-list')
-                for (let line of result['lines']) {
-                    notes.innerHTML += `<li>${line['text']}</li>`
-                }
-                notes.innerHTML += "<br>"
+            //     // Update the extension UI
+            //     var notes = document.getElementById('notes-list')
+            //     for (let line of result['lines']) {
+            //         notes.innerHTML += `<li>${line['text']}</li>`
+            //     }
+            //     notes.innerHTML += "<br>"
                 
-                // List out detected entities and fetch corresponding wiki page
-                var entities = document.getElementById('entities-list')
-                for (let line of result['entities']) {
+            //     // List out detected entities and fetch corresponding wiki page
+            //     var entities = document.getElementById('entities-list')
+            //     for (let line of result['entities']) {
 
-                    var wiki_link = `https://en.wikipedia.org/wiki/${line['entity']}`
+            //         var wiki_link = `https://en.wikipedia.org/wiki/${line['entity']}`
 
-                    // var iframe = document.createElement('iframe'); 
-                    // iframe.style.background = "white";
-                    // iframe.style.height = "100%";
-                    // iframe.style.width = "500px";
-                    // iframe.style.position = "relative";
-                    // iframe.style.top = "0px";
-                    // iframe.style.right = "0px";
-                    // iframe.frameBorder = "none"; 
-                    // iframe.src = wiki_link
-                    // iframe.className=""
+            //         // var iframe = document.createElement('iframe'); 
+            //         // iframe.style.background = "white";
+            //         // iframe.style.height = "100%";
+            //         // iframe.style.width = "500px";
+            //         // iframe.style.position = "relative";
+            //         // iframe.style.top = "0px";
+            //         // iframe.style.right = "0px";
+            //         // iframe.frameBorder = "none"; 
+            //         // iframe.src = wiki_link
+            //         // iframe.className=""
 
 
-                    // entities.innerHTML += `<a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})`
-                    entities.innerHTML += `
-                    <li>
-                    <a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})
-                    </li>
-                    <br>
-                    `
-                    // entities.innerHTML += '<br>'
-                    // entities.innerHTML += `
-                    //     <div class="link" id="${'box_'+wiki_link}">
-                    //     </div> 
-                    // `
-                    // entities.innerHTML += `<br>`
+            //         // entities.innerHTML += `<a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})`
+            //         entities.innerHTML += `
+            //         <li>
+            //         <a class="link" href="${wiki_link}" target="_blank">${line['entity']}</a> (${line['label']})
+            //         </li>
+            //         <br>
+            //         `
+            //         // entities.innerHTML += '<br>'
+            //         // entities.innerHTML += `
+            //         //     <div class="link" id="${'box_'+wiki_link}">
+            //         //     </div> 
+            //         // `
+            //         // entities.innerHTML += `<br>`
 
-                    // var boxDiv = document.getElementById('box_'+wiki_link)
+            //         // var boxDiv = document.getElementById('box_'+wiki_link)
                     
-                    // boxDiv.appendChild(iframe);
-                }
-                entities.innerHTML += "<br><br>"
+            //         // boxDiv.appendChild(iframe);
+            //     }
+            //     entities.innerHTML += "<br><br>"
 
 
-                var summary = document.getElementById('summary')
-                summary.innerHTML += result['summary']
-                summary.innerHTML += `<br>`
+            //     var summary = document.getElementById('summary')
+            //     summary.innerHTML += result['summary']
+            //     summary.innerHTML += `<br>`
 
 
-                // Reset button text back to normal
-                button.innerHTML = "wake up studybuddy"
+            //     // Reset button text back to normal
+            //     button.innerHTML = "wake up studybuddy"
 
 
-            })
-            .catch(error => {
-                chrome.extension.getBackgroundPage().console.error('Error:', error);
-            });
+            // })
+            // .catch(error => {
+            //     chrome.extension.getBackgroundPage().console.error('Error:', error);
+            // });
         },
         false
       );

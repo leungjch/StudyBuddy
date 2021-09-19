@@ -1,4 +1,4 @@
-alert("injected");
+alert("Studybudy is taking notes now!");
 class Rect {
   constructor(x, y, width, height, value = null) {
     this.x = x;
