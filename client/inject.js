@@ -9,7 +9,7 @@ class Rect {
   }
 
   repr() {
-    return `${this.value}${this.x}${this.y}`;
+    return `${this.value}`;
   }
 }
 
@@ -167,9 +167,7 @@ function main() {
     var dataURL = offScreenCanvas.toDataURL();
     var selectedRects = [];
     let response = await getAPI(dataURL);
-    chrome.runtime.sendMessage(response, function (response) {
-      console.log("sending message");
-    });
+
     response.lines.forEach((line) => {
       const boundaryBox = line.bounding_box;
       const [width, height] = [video.offsetWidth, video.offsetHeight];
@@ -194,6 +192,9 @@ function main() {
       });
       console.log("IS DIFFERENT");
       canvas.showRects(selectedRects);
+      chrome.runtime.sendMessage(response, function (response) {
+        console.log("sending message");
+      });
     }
   }, 3000);
 }
