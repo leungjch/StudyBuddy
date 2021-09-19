@@ -185,14 +185,14 @@ function main() {
       );
     });
 
-    console.log(seen);
-    if (isDifferent(seen, selectedRects)) {
-      seen = {};
-      selectedRects.forEach((val) => {
-        seen[val.repr()] = true;
-      });
-      canvas.showRects(selectedRects);
-    }
+    // console.log(seen);
+    // if (isDifferent(seen, selectedRects)) {
+    //   seen = {};
+    //   selectedRects.forEach((val) => {
+    //     seen[val.repr()] = true;
+    //   });
+    // }
+    canvas.showRects(selectedRects);
   }, 3000);
 }
 main();
