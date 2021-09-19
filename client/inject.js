@@ -38,13 +38,13 @@ class Canvas {
         console.log(rect);
         let text = document.createElement("div");
         text.style.position = "absolute";
-        text.style.zIndex = 8;
         text.innerHTML = rect.value;
         text.style.left = rect.x + video.getBoundingClientRect().left + "px";
         text.style.top = rect.y + video.getBoundingClientRect().top + "px";
         text.style.textAlign = "center";
         text.style.color = "transparent";
-
+        text.style.setProperty("z-index", "2147483638", "important");
+        text.style.userSelect = "text";
         text.style.fontSize = `${rect.height}px`;
         document.body.appendChild(text);
         this.renderedRects.push(text);
@@ -203,7 +203,7 @@ function main() {
     //   var myData = context.getImageData(0, 0, frame.width, frame.height);
 
     //   console.log(myData, myData.data.size);
-  }, 5000);
+  }, 3000);
 }
 main();
 
