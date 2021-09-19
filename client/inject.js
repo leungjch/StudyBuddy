@@ -7,6 +7,10 @@ class Rect {
     this.height = height;
     this.value = value;
   }
+
+  repr() {
+    return `${this.value}${this.x}${this.y}`;
+  }
 }
 
 class Canvas {
@@ -46,6 +50,7 @@ class Canvas {
         text.style.userSelect = "text";
         text.style.fontSize = `${rect.height}px`;
         document.body.appendChild(text);
+        // text.style.transform = `scale(${rect.width / text.offsetWidth}, 1)`;
         this.renderedRects.push(text);
       }
       //   ctx.fillStyle = "rgba(129, 207, 224, 0.4)";
@@ -122,6 +127,17 @@ async function getAPI(data) {
   return content;
 }
 
+function isDifferent(seen, incoming) {
+  incoming.forEach((val) => {
+    console.log(val.repr());
+    if (!(val.repr() in seen)) {
+      return true;
+    }
+  });
+  console.log("HIT");
+  return false;
+}
+
 function main() {
   var ghost = document.createElement("canvas");
   ghost.id = "ghost";
@@ -132,12 +148,12 @@ function main() {
   let canvas = new Canvas("CursorLayer", (r) => {
     console.log(r);
   });
-  var pressed = {};
 
-  let video = document.querySelector("video");
-  video.onkeydown.addEventListener("keydown", (e) => console.log(e));
-
+  var seen = {};
   setInterval(async function () {
+    let video = document.querySelector("video");
+    if (video == null) return;
+
     // resize_canvas(video);
     let stream = video.captureStream();
     let imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
@@ -169,7 +185,14 @@ function main() {
       );
     });
 
-    canvas.showRects(selectedRects);
+    console.log(seen);
+    if (isDifferent(seen, selectedRects)) {
+      seen = {};
+      selectedRects.forEach((val) => {
+        seen[val.repr()] = true;
+      });
+      canvas.showRects(selectedRects);
+    }
   }, 3000);
 }
 main();
