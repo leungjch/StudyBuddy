@@ -1,4 +1,4 @@
-alert("Studybudy is taking notes now!");
+alert("Studybuddy is taking notes now!");
 class Rect {
   constructor(x, y, width, height, value = null) {
     this.x = x;
@@ -29,13 +29,9 @@ class Canvas {
   showRects(rects) {
     this.clear();
     let video = document.querySelector("video");
-    // let ctx = canvas.getContext("2d");
-    // console.log(rects);
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < rects.length; i++) {
       let rect = rects[i];
       if (rect.value) {
-        console.log(rect);
         let text = document.createElement("div");
         text.style.position = "absolute";
         text.innerHTML = rect.value;
@@ -44,7 +40,7 @@ class Canvas {
         text.style.textAlign = "center";
         text.style.color = "transparent";
 
-        text.style.backgroundColor = "rgba(0, 0, 255, 0.2)";
+        // text.style.backgroundColor = "rgba(0, 0, 255, 0.2)";
 
         text.style.setProperty("z-index", "2147483638", "important");
         text.style.userSelect = "text";
@@ -112,14 +108,6 @@ class Canvas {
   }
 }
 
-// function resize_canvas(element) {
-//   var cv = document.getElementById("CursorLayer");
-//   cv.width = element.offsetWidth;
-//   cv.height = element.offsetHeight;
-//   cv.style.top = `${element.offsetTop}px`;
-//   cv.style.left = `${element.offsetLeft}px`;
-// }
-
 async function getAPI(data) {
   data = data.substr(22);
   let res = await fetch("http://localhost:8000/process", {
@@ -131,46 +119,25 @@ async function getAPI(data) {
     body: JSON.stringify({ imageData: data }),
   });
   const content = await res.json();
-  console.log("Request completed with: ", content);
   return content;
 }
 
 function main() {
-  let video = document.querySelector("video");
-  // var cursorLayer = document.createElement("canvas");
-  // cursorLayer.id = "CursorLayer";
-  // cursorLayer.style.zIndex = 8;
-  // cursorLayer.style.position = "absolute";
-  // cursorLayer.style.pointerEvents = "none";
-  // cursorLayer.style.cursor = "text";
-  // // cursorLayer.style.backgroundColor = "red";
-  // cursorLayer.style.top = `${video.offsetTop}px`;
-  // cursorLayer.style.left = `${video.offsetLeft}px`;
-  // document.body.appendChild(cursorLayer);
-
   var ghost = document.createElement("canvas");
   ghost.id = "ghost";
   ghost.style.position = "absolute";
-  //   ghost.style.opacity = "0";
+  ghost.style.display = "none";
   document.body.appendChild(ghost);
 
   let canvas = new Canvas("CursorLayer", (r) => {
     console.log(r);
   });
-  // resize_canvas(video);
-  // document.addEventListener("mousedown", function (e) {
-  //   // canvas.startSelection(e);
-  // });
-  // document.addEventListener("mouseup", function (e) {
-  //   canvas.endSelection(e);
-  // });
-  // document.addEventListener("mousemove", function (e) {
-  //   canvas.whileSelecting(e);
-  // });
+  var pressed = {};
+
+  let video = document.querySelector("video");
+  video.onkeydown.addEventListener("keydown", (e) => console.log(e));
 
   setInterval(async function () {
-    console.log("RUNNING MAIN");
-    let video = document.querySelector("video");
     // resize_canvas(video);
     let stream = video.captureStream();
     let imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
@@ -181,16 +148,14 @@ function main() {
     const [frameWidth, frameHeight] = [frame.width, frame.height];
     context.transferFromImageBitmap(frame);
     var dataURL = offScreenCanvas.toDataURL();
-    console.log(dataURL);
     var selectedRects = [];
     let response = await getAPI(dataURL);
-    chrome.runtime.sendMessage(response, function(response) {
+    chrome.runtime.sendMessage(response, function (response) {
       console.log("sending message");
-      });
+    });
     response.lines.forEach((line) => {
       const boundaryBox = line.bounding_box;
       const [width, height] = [video.offsetWidth, video.offsetHeight];
-      console.log(width, height, frameWidth, frameHeight);
       const wScale = width / frameWidth;
       const hScale = height / frameHeight;
       selectedRects.push(
@@ -205,19 +170,6 @@ function main() {
     });
 
     canvas.showRects(selectedRects);
-    //   console.log(dataURL);
-    //   var myData = context.getImageData(0, 0, frame.width, frame.height);
-
-    //   console.log(myData, myData.data.size);
   }, 3000);
 }
 main();
-
-// window.addEventListener("DOMContentLoaded", () => {
-//   main();
-// });
-
-window.onresize = () => {
-  let video = document.querySelector("video");
-  // resize_canvas(video);
-};
