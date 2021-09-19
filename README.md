@@ -1,6 +1,6 @@
 # StudyBuddy | Intelligent video notetaking Chrome extension
 
-See full [Devpost](https://devpost.com/software/studdybuddy-wvsny2) submission here.
+[See full Devpost submission here.](https://devpost.com/software/studdybuddy-wvsny2)
 
 ## 💡 Inspiration 💡
 Due to the COVID-19 pandemic, many post secondary institutions have shifted online, meaning more online lectures and watching videos to learn. However, as university students ourselves, we often found that balancing watching lectures and taking neat, high quality notes is really, really hard. 
