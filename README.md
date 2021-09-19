@@ -1,4 +1,4 @@
-# StudyBuddy | Intelligent video notetaking Chrome extension
+# StudyBuddy | Chrome extension for intelligent notetaking on any video feed
 
 [See full Devpost submission here.](https://devpost.com/software/studdybuddy-wvsny2)
 
