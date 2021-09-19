@@ -128,16 +128,18 @@ async function getAPI(data) {
 }
 
 function isDifferent(seen, incoming) {
-  incoming.forEach((val) => {
-    console.log(val.repr());
-    if (!(val.repr() in seen)) {
+  for (var i = 0; i < incoming.length; i++) {
+    let val = incoming[i];
+    // console.log(val.repr(), seen);
+    if (!seen.hasOwnProperty(val.repr())) {
       return true;
     }
-  });
-  console.log("HIT");
+  }
+
   return false;
 }
 
+var seen = {};
 function main() {
   var ghost = document.createElement("canvas");
   ghost.id = "ghost";
@@ -149,7 +151,6 @@ function main() {
     console.log(r);
   });
 
-  var seen = {};
   setInterval(async function () {
     let video = document.querySelector("video");
     if (video == null) return;
@@ -186,13 +187,14 @@ function main() {
     });
 
     // console.log(seen);
-    // if (isDifferent(seen, selectedRects)) {
-    //   seen = {};
-    //   selectedRects.forEach((val) => {
-    //     seen[val.repr()] = true;
-    //   });
-    // }
-    canvas.showRects(selectedRects);
+    if (isDifferent(seen, selectedRects)) {
+      seen = {};
+      selectedRects.forEach((val) => {
+        seen[val.repr()] = true;
+      });
+      console.log("IS DIFFERENT");
+      canvas.showRects(selectedRects);
+    }
   }, 3000);
 }
 main();
